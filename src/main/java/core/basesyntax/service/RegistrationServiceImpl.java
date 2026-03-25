@@ -38,7 +38,9 @@ public class RegistrationServiceImpl implements RegistrationService {
                     + user.getLogin().length());
         }
 
-        return storageDao.add(user);
+        storageDao.add(user);
+
+        return user;
 
     }
 }

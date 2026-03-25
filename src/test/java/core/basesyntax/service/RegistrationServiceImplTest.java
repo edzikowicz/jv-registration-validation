@@ -1,6 +1,6 @@
 package core.basesyntax.service;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import core.basesyntax.dao.StorageDao;
@@ -17,22 +17,25 @@ class RegistrationServiceImplTest {
     void setUp() {
         registrationService = new RegistrationServiceImpl();
         storageDao = new StorageDaoImpl();
+        storageDao.clear();
     }
 
     @Test
     void register_validUser_ok() {
         User user = new User("validLogin", "password", 19);
         registrationService.register(user);
-        User saved = storageDao.get("validLogin");
-        assertNotNull(saved);
+        User actual = storageDao.get("validLogin");
+        User expected = new User("validLogin", "password", 19);
+        assertEquals(actual, expected);
     }
 
     @Test
     void register_boundUser_ok() {
         User user = new User("123456", "123456", 18);
         registrationService.register(user);
-        User saved = storageDao.get("123456");
-        assertNotNull(saved);
+        User actual = storageDao.get("123456");
+        User expected = new User("123456", "123456", 18);
+        assertEquals(actual, expected);
     }
 
     @Test
@@ -46,6 +49,12 @@ class RegistrationServiceImplTest {
     @Test
     void register_edgeUserLogin_notOk() {
         User user = new User("12345", "password", 18);
+        assertThrows(RegistrationException.class, () -> registrationService.register(user));
+    }
+
+    @Test
+    void register_emptyUserLogin_notOk() {
+        User user = new User("", "password", 18);
         assertThrows(RegistrationException.class, () -> registrationService.register(user));
     }
 
@@ -70,6 +79,12 @@ class RegistrationServiceImplTest {
     @Test
     void register_edgeUserPassword_notOk() {
         User user = new User("validLogin", "12345", 19);
+        assertThrows(RegistrationException.class, () -> registrationService.register(user));
+    }
+
+    @Test
+    void register_emptyUserPassword_notOk() {
+        User user = new User("validLogin", "", 19);
         assertThrows(RegistrationException.class, () -> registrationService.register(user));
     }
 
